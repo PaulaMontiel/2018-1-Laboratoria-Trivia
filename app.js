@@ -1,39 +1,91 @@
-window.onload = function() {
-    var name = prompt("¿cuál es tu nombre?");
-    document.getElementById("name").innerText = name;
-
-    var wantToPlay = prompt("¿quieres jugar? s/n");
-    if (wantToPlay.toLowerCase() == "s") {
-        var answer1 = prompt("¿han egresado hombres en Laboratoria? s/n");
-        if (answer1.toLowerCase() == "n") {
-            document.getElementById("rightAnswersText").innerHTML =
-                document.getElementById("rightAnswersText").innerHTML +
-                "<div class='answer'>" +
-                "<p>No han egresado hombres</p>"
-            "</div>";
-        } else {
-            document.getElementById("wrongAnswersText").innerHTML =
-                document.getElementById("wrongAnswersText").innerHTML +
-                "<div class='answer'>" +
-                "<p>No han egresado hombres</p>"
-            "</div>";
-        }
-
-        var answer2 = prompt("¿hay laboratoria en concepción? s/n");
-        if (answer2.toLowerCase() == "n") {
-            document.getElementById("rightAnswersText").innerHTML =
-                document.getElementById("rightAnswersText").innerHTML +
-                "<div class='answer'>" +
-                "<p>No hay laboratoria en concepción</p>"
-            "</div>";
-        } else {
-            document.getElementById("wrongAnswersText").innerHTML =
-                document.getElementById("wrongAnswersText").innerHTML +
-                "<div class='answer'>" +
-                "<p>No hay laboratoria en concepción</p>"
-            "</div>";
-        }
-    } else {
-        document.getElementById("warningMessage").innerText = "Bueno Chao";
+function introducirNombre(){
+    document.getElementById("name").innerHTML = " Bienvenida " + document.getElementById("user_name").value  ;
     }
-}
+(function() {
+    function buildQuiz() {
+    
+      const output = [];
+  
+      myQuestions.forEach((currentQuestion, questionNumber) => {
+       
+        const answers = [];
+        for (letter in currentQuestion.answers) {
+          answers.push(
+            `<label>
+              <input type="radio" name="question${questionNumber}" value="${letter}">
+              ${letter} :
+              ${currentQuestion.answers[letter]}
+            </label>`
+          );
+        }
+        output.push(
+          `<div class="question"> ${currentQuestion.question} </div>
+          <div class="answers"> ${answers.join("")} </div>`
+        );
+      });
+      quizContainer.innerHTML = output.join("");
+    }
+  
+    function showResults() {
+      
+      const answerContainers = quizContainer.querySelectorAll(".answers");
+  
+      let numCorrect = 0;
+      myQuestions.forEach((currentQuestion, questionNumber) => {
+        
+        const answerContainer = answerContainers[questionNumber];
+        const selector = `input[name=question${questionNumber}]:checked`;
+        const userAnswer = (answerContainer.querySelector(selector) || {}).value;
+  
+      
+        if (userAnswer === currentQuestion.correctAnswer) {
+         
+          numCorrect++;
+          answerContainers[questionNumber].style.color = "lightgreen";
+        } else {
+        
+          answerContainers[questionNumber].style.color = "red";
+        }
+      });
+  
+     
+      resultsContainer.innerHTML = `${numCorrect} out of ${myQuestions.length}`;
+    }
+  
+    const quizContainer = document.getElementById("quiz");
+    const resultsContainer = document.getElementById("results");
+    const submitButton = document.getElementById("submit");
+    const myQuestions = [
+      {
+        question: "Dónde se fundó Laboratoria?",
+        answers: {
+          a: "Alemania",
+          b: "Perú",
+          c: "Chile"
+        },
+        correctAnswer: "b"
+      },
+      {
+        question: "Nombre de su fundadora?",
+        answers: {
+          a: "Alice",
+          b: "Mariana",
+          c: "Deyanira"
+        },
+        correctAnswer: "b"
+      },
+      {
+        question: "Requisitos de ingreso?",
+        answers: {
+          a: "mayor de 18 años",
+          b: "Mujer",
+          c: "Todas las anteriores",
+          d: "Ninguna de las anteriores"
+        },
+        correctAnswer: "c"
+      }
+    ];
+    buildQuiz();
+  
+    submitButton.addEventListener("click", showResults);
+  })();
